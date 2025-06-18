@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jaipur Interactive Map</title>
+    <title>Interact Jaipur</title>
     <style>
         body {
             margin: 0;
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
             min-height: 100vh;
         }
         
@@ -27,7 +27,7 @@
             color: #2c3e50;
             margin-bottom: 30px;
             font-size: 2.5em;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
+            background: linear-gradient(45deg, #000000, #000000);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -69,7 +69,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
+            background: linear-gradient(45deg, #000000, #000000);
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
@@ -78,7 +78,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
+            background: linear-gradient(45deg, #000000, #000000);
             cursor: pointer;
             border: none;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
@@ -142,7 +142,7 @@
         }
         
         .current-suburb {
-            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            background: linear-gradient(45deg, #000000, #000000);
             color: white;
             padding: 5px 10px;
             border-radius: 15px;
@@ -151,7 +151,7 @@
         }
         
         .radius-value {
-            background: linear-gradient(45deg, #3498db, #9b59b6);
+            background: linear-gradient(45deg, #000000, #000000);
             color: white;
             padding: 5px 10px;
             border-radius: 20px;
@@ -200,27 +200,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>🗺️ Jaipur Interactive Map</h1>
+        <h1>Interact Jaipur</h1>
         
         <div class="controls">
             <div class="control-group">
-                <label for="radiusSlider">Analysis Radius:</label>
+                <label for="radiusSlider">Area (Radius)</label>
                 <input type="range" id="radiusSlider" class="slider" min="20" max="150" value="60" step="5">
                 <span class="radius-value" id="radiusDisplay">2.0 km</span>
             </div>
             <div class="control-group">
-                <span style="font-size: 0.9em; color: #7f8c8d;">💡 Move cursor to explore different areas of Jaipur</span>
+                <span style="font-size: 0.9em; color: #000000;"><p style="font-family: sans-serif;">
+  Made with love by 
+  <a href="https://www.linkedin.com/in/adtyapnda/" style="text-decoration: none; color: #000000;">Aditya Panda</a>, 
+  <a href="https://www.linkedin.com/in/iha-singh-962854226/" style="text-decoration: none; color: #000000;">Iha Singh</a>, 
+  and Sagar Singh
+</p>
+</span>
             </div>
         </div>
         
         <div class="map-container">
             <svg id="map-svg" viewBox="0 0 800 600">
-                <!-- Background administrative boundaries -->
+                
                 <g class="background-boundaries">
-                    <!-- Main Jaipur district boundary -->
+                    
                     <path class="background-map" d="M 80,120 Q 120,80 180,90 L 280,75 Q 350,70 420,85 L 520,95 Q 580,105 620,140 L 680,180 Q 720,220 730,280 L 740,340 Q 735,400 710,450 L 680,500 Q 640,540 580,555 L 520,565 Q 460,570 400,565 L 340,560 Q 280,555 230,540 L 180,520 Q 130,490 100,450 L 85,400 Q 75,350 80,300 L 85,250 Q 90,200 80,120 Z"/>
                     
-                    <!-- Road network overlay -->
                     <g class="road-network" opacity="0.4">
                         <!-- Ring Road -->
                         <ellipse cx="400" cy="300" rx="280" ry="200" stroke="#444" stroke-width="2" fill="none"/>
@@ -239,7 +244,6 @@
                     </g>
                 </g>
                 
-                <!-- District Areas (invisible clickable regions) -->
                 <g class="district-regions">
                     <!-- Pink City -->
                     <polygon points="350,250 410,250 410,310 350,310" class="district-area" data-district="0"/>
@@ -332,12 +336,11 @@
                     <polygon points="170,280 230,280 230,340 170,340" class="district-area" data-district="29"/>
                 </g>
                 
-                <!-- Cursor circle (will be moved by JavaScript) -->
                 <circle id="cursor-circle" cx="400" cy="300" r="60" class="cursor-circle" style="display: none;"/>
             </svg>
             
             <div class="info-panel">
-                <h3>📊 Area Statistics</h3>
+                <h3>Statistics Required:</h3>
                 <div class="info-item">
                     <div class="info-label">Current Suburb</div>
                     <div class="info-value current-suburb" id="suburbDisplay">Move cursor over map</div>
@@ -361,7 +364,6 @@
     </div>
 
     <script>
-        // Comprehensive Jaipur districts data with random realistic data
         const jaipurDistricts = [
             { name: "Pink City (Walled City)", population: 85000, incomePerCapita: 180000, density: 45000 },
             { name: "Civil Lines", population: 120000, incomePerCapita: 320000, density: 28000 },
@@ -401,27 +403,23 @@
         const radiusDisplay = document.getElementById('radiusDisplay');
         const tooltip = document.getElementById('tooltip');
 
-        let currentRadius = 60; // SVG units
+        let currentRadius = 60;
         let currentSuburb = null;
 
-        // Convert SVG units to approximate kilometers
         function svgToKm(svgUnits) {
             return (svgUnits * 0.033).toFixed(1);
         }
 
-        // Update radius display
         function updateRadiusDisplay() {
             radiusDisplay.textContent = svgToKm(currentRadius) + ' km';
         }
 
-        // Slider functionality
         radiusSlider.addEventListener('input', function() {
             currentRadius = parseInt(this.value);
             cursorCircle.setAttribute('r', currentRadius);
             updateRadiusDisplay();
         });
 
-        // Check if point is inside polygon
         function pointInPolygon(x, y, polygon) {
             let inside = false;
             for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -433,7 +431,6 @@
             return inside;
         }
 
-        // Get polygon points from SVG element
         function getPolygonPoints(element) {
             const points = element.getAttribute('points').split(' ');
             return points.map(point => {
@@ -442,7 +439,6 @@
             });
         }
 
-        // Find which district the cursor is over
         function findCurrentDistrict(x, y) {
             const districtElements = document.querySelectorAll('.district-area');
             for (let i = 0; i < districtElements.length; i++) {
@@ -455,12 +451,10 @@
             return null;
         }
 
-        // Calculate distance between two points
         function getDistance(x1, y1, x2, y2) {
             return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         }
 
-        // Calculate center of polygon
         function getPolygonCenter(points) {
             let x = 0, y = 0;
             for (let point of points) {
@@ -470,7 +464,6 @@
             return [x / points.length, y / points.length];
         }
 
-        // Calculate statistics within radius
         function calculateStats(centerX, centerY, radius) {
             let totalPopulation = 0;
             let totalIncome = 0;
@@ -512,7 +505,6 @@
             };
         }
 
-        // Mouse move event
         svg.addEventListener('mousemove', function(e) {
             const rect = svg.getBoundingClientRect();
             const scaleX = 800 / rect.width;
@@ -521,12 +513,10 @@
             const x = (e.clientX - rect.left) * scaleX;
             const y = (e.clientY - rect.top) * scaleY;
 
-            // Show and position cursor circle
             cursorCircle.style.display = 'block';
             cursorCircle.setAttribute('cx', x);
             cursorCircle.setAttribute('cy', y);
 
-            // Find current district
             const districtIndex = findCurrentDistrict(x, y);
             if (districtIndex !== null && districtIndex !== currentSuburb) {
                 currentSuburb = districtIndex;
@@ -535,7 +525,6 @@
                 document.getElementById('suburbDisplay').textContent = 'Outside mapped area';
             }
 
-            // Calculate and display statistics
             const stats = calculateStats(x, y, currentRadius);
             
             document.getElementById('populationDisplay').textContent = 
@@ -546,7 +535,6 @@
                 stats.density.toLocaleString('en-IN') + ' per km²';
         });
 
-        // Mouse leave event
         svg.addEventListener('mouseleave', function() {
             cursorCircle.style.display = 'none';
             currentSuburb = null;
@@ -557,7 +545,6 @@
             document.getElementById('densityDisplay').textContent = '-- per km²';
         });
 
-        // Initialize
         updateRadiusDisplay();
     </script>
 </body>
