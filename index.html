@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaipur Interactive Map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            background: #f0f8ff;
+        }
+        
+        #map-svg {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .info-panel h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .info-item {
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .info-value {
+            font-size: 1.2em;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+        
+        .current-suburb {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .radius-value {
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .background-map {
+            opacity: 0.3;
+            stroke: #666;
+            stroke-width: 0.5;
+            fill: none;
+        }
+        
+        .district-area {
+            fill: rgba(0,0,0,0.02);
+            stroke: rgba(0,0,0,0.1);
+            stroke-width: 0.5;
+            cursor: crosshair;
+        }
+        
+        .district-area:hover {
+            fill: rgba(52, 152, 219, 0.1);
+            stroke: rgba(52, 152, 219, 0.3);
+            stroke-width: 1;
+        }
+        
+        .cursor-circle {
+            fill: rgba(52, 152, 219, 0.2);
+            stroke: #3498db;
+            stroke-width: 3;
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Jaipur Interactive Map</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="radiusSlider">Analysis Radius:</label>
+                <input type="range" id="radiusSlider" class="slider" min="20" max="150" value="60" step="5">
+                <span class="radius-value" id="radiusDisplay">2.0 km</span>
+            </div>
+            <div class="control-group">
+                <span style="font-size: 0.9em; color: #7f8c8d;">💡 Move cursor to explore different areas of Jaipur</span>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <svg id="map-svg" viewBox="0 0 800 600">
+                <!-- Background administrative boundaries -->
+                <g class="background-boundaries">
+                    <!-- Main Jaipur district boundary -->
+                    <path class="background-map" d="M 80,120 Q 120,80 180,90 L 280,75 Q 350,70 420,85 L 520,95 Q 580,105 620,140 L 680,180 Q 720,220 730,280 L 740,340 Q 735,400 710,450 L 680,500 Q 640,540 580,555 L 520,565 Q 460,570 400,565 L 340,560 Q 280,555 230,540 L 180,520 Q 130,490 100,450 L 85,400 Q 75,350 80,300 L 85,250 Q 90,200 80,120 Z"/>
+                    
+                    <!-- Road network overlay -->
+                    <g class="road-network" opacity="0.4">
+                        <!-- Ring Road -->
+                        <ellipse cx="400" cy="300" rx="280" ry="200" stroke="#444" stroke-width="2" fill="none"/>
+                        
+                        <!-- Major Highways -->
+                        <line x1="120" y1="300" x2="680" y2="300" stroke="#444" stroke-width="2"/> <!-- Ajmer Road -->
+                        <line x1="400" y1="120" x2="400" y2="480" stroke="#444" stroke-width="2"/> <!-- Tonk Road -->
+                        <line x1="180" y1="180" x2="620" y2="420" stroke="#444" stroke-width="2"/> <!-- Delhi Road -->
+                        <line x1="220" y1="420" x2="580" y2="180" stroke="#444" stroke-width="2"/> <!-- Agra Road -->
+                        
+                        <!-- Secondary Roads -->
+                        <line x1="250" y1="150" x2="550" y2="450" stroke="#666" stroke-width="1"/>
+                        <line x1="150" y1="350" x2="650" y2="250" stroke="#666" stroke-width="1"/>
+                        <line x1="320" y1="120" x2="480" y2="480" stroke="#666" stroke-width="1"/>
+                        <line x1="150" y1="250" x2="650" y2="350" stroke="#666" stroke-width="1"/>
+                    </g>
+                </g>
+                
+                <!-- District Areas (invisible clickable regions) -->
+                <g class="district-regions">
+                    <!-- Pink City -->
+                    <polygon points="350,250 410,250 410,310 350,310" class="district-area" data-district="0"/>
+                    
+                    <!-- Civil Lines -->
+                    <polygon points="330,180 390,180 390,240 330,240" class="district-area" data-district="1"/>
+                    
+                    <!-- Malviya Nagar -->
+                    <polygon points="390,370 450,370 450,430 390,430" class="district-area" data-district="2"/>
+                    
+                    <!-- Vaishali Nagar -->
+                    <polygon points="220,250 280,250 280,310 220,310" class="district-area" data-district="3"/>
+                    
+                    <!-- Mansarovar -->
+                    <polygon points="290,320 350,320 350,380 290,380" class="district-area" data-district="4"/>
+                    
+                    <!-- Jagatpura -->
+                    <polygon points="470,350 530,350 530,410 470,410" class="district-area" data-district="5"/>
+                    
+                    <!-- Sanganer -->
+                    <polygon points="350,420 410,420 410,480 350,480" class="district-area" data-district="6"/>
+                    
+                    <!-- Jhotwara -->
+                    <polygon points="290,120 350,120 350,180 290,180" class="district-area" data-district="7"/>
+                    
+                    <!-- C-Scheme -->
+                    <polygon points="310,230 370,230 370,290 310,290" class="district-area" data-district="8"/>
+                    
+                    <!-- Bani Park -->
+                    <polygon points="270,170 330,170 330,230 270,230" class="district-area" data-district="9"/>
+                    
+                    <!-- Shyam Nagar -->
+                    <polygon points="170,220 230,220 230,280 170,280" class="district-area" data-district="10"/>
+                    
+                    <!-- Sodala -->
+                    <polygon points="450,250 510,250 510,310 450,310" class="district-area" data-district="11"/>
+                    
+                    <!-- Chitrakoot -->
+                    <polygon points="470,320 530,320 530,380 470,380" class="district-area" data-district="12"/>
+                    
+                    <!-- Tonk Road Area -->
+                    <polygon points="420,290 480,290 480,350 420,350" class="district-area" data-district="13"/>
+                    
+                    <!-- Ajmer Road Area -->
+                    <polygon points="250,290 310,290 310,350 250,350" class="district-area" data-district="14"/>
+                    
+                    <!-- Durgapura -->
+                    <polygon points="350,320 410,320 410,380 350,380" class="district-area" data-district="15"/>
+                    
+                    <!-- Gopalpura -->
+                    <polygon points="410,320 470,320 470,380 410,380" class="district-area" data-district="16"/>
+                    
+                    <!-- Pratap Nagar -->
+                    <polygon points="220,320 280,320 280,380 220,380" class="district-area" data-district="17"/>
+                    
+                    <!-- Sitapura -->
+                    <polygon points="530,350 590,350 590,410 530,410" class="district-area" data-district="18"/>
+                    
+                    <!-- Bapu Nagar -->
+                    <polygon points="290,250 350,250 350,310 290,310" class="district-area" data-district="19"/>
+                    
+                    <!-- Kalwar Road -->
+                    <polygon points="170,150 230,150 230,210 170,210" class="district-area" data-district="20"/>
+                    
+                    <!-- Murlipura -->
+                    <polygon points="510,180 570,180 570,240 510,240" class="district-area" data-district="21"/>
+                    
+                    <!-- Kardhani -->
+                    <polygon points="410,380 470,380 470,440 410,440" class="district-area" data-district="22"/>
+                    
+                    <!-- Kukas -->
+                    <polygon points="450,120 510,120 510,180 450,180" class="district-area" data-district="23"/>
+                    
+                    <!-- Bassi -->
+                    <polygon points="590,320 650,320 650,380 590,380" class="district-area" data-district="24"/>
+                    
+                    <!-- Chomu -->
+                    <polygon points="350,120 410,120 410,180 350,180" class="district-area" data-district="25"/>
+                    
+                    <!-- Shahpura -->
+                    <polygon points="530,250 590,250 590,310 530,310" class="district-area" data-district="26"/>
+                    
+                    <!-- Vidhyadhar Nagar -->
+                    <polygon points="410,180 470,180 470,240 410,240" class="district-area" data-district="27"/>
+                    
+                    <!-- Raja Park -->
+                    <polygon points="330,240 390,240 390,300 330,300" class="district-area" data-district="28"/>
+                    
+                    <!-- Hathroi -->
+                    <polygon points="170,280 230,280 230,340 170,340" class="district-area" data-district="29"/>
+                </g>
+                
+                <!-- Cursor circle (will be moved by JavaScript) -->
+                <circle id="cursor-circle" cx="400" cy="300" r="60" class="cursor-circle" style="display: none;"/>
+            </svg>
+            
+            <div class="info-panel">
+                <h3>📊 Area Statistics</h3>
+                <div class="info-item">
+                    <div class="info-label">Current Suburb</div>
+                    <div class="info-value current-suburb" id="suburbDisplay">Move cursor over map</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Population in Radius</div>
+                    <div class="info-value" id="populationDisplay">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Average Income per Capita</div>
+                    <div class="info-value" id="incomeDisplay">₹ --</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Population Density</div>
+                    <div class="info-value" id="densityDisplay">-- per km²</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Comprehensive Jaipur districts data with random realistic data
+        const jaipurDistricts = [
+            { name: "Pink City (Walled City)", population: 85000, incomePerCapita: 180000, density: 45000 },
+            { name: "Civil Lines", population: 120000, incomePerCapita: 320000, density: 28000 },
+            { name: "Malviya Nagar", population: 180000, incomePerCapita: 250000, density: 35000 },
+            { name: "Vaishali Nagar", population: 210000, incomePerCapita: 280000, density: 42000 },
+            { name: "Mansarovar", population: 195000, incomePerCapita: 220000, density: 38000 },
+            { name: "Jagatpura", population: 160000, incomePerCapita: 200000, density: 32000 },
+            { name: "Sanganer", population: 140000, incomePerCapita: 170000, density: 29000 },
+            { name: "Jhotwara", population: 130000, incomePerCapita: 160000, density: 31000 },
+            { name: "C-Scheme", population: 95000, incomePerCapita: 350000, density: 25000 },
+            { name: "Bani Park", population: 105000, incomePerCapita: 240000, density: 27000 },
+            { name: "Shyam Nagar", population: 125000, incomePerCapita: 175000, density: 33000 },
+            { name: "Sodala", population: 88000, incomePerCapita: 205000, density: 24000 },
+            { name: "Chitrakoot", population: 115000, incomePerCapita: 195000, density: 30000 },
+            { name: "Tonk Road Area", population: 110000, incomePerCapita: 190000, density: 28500 },
+            { name: "Ajmer Road Area", population: 145000, incomePerCapita: 185000, density: 36000 },
+            { name: "Durgapura", population: 98000, incomePerCapita: 165000, density: 26000 },
+            { name: "Gopalpura", population: 92000, incomePerCapita: 210000, density: 25500 },
+            { name: "Pratap Nagar", population: 135000, incomePerCapita: 155000, density: 34000 },
+            { name: "Sitapura", population: 78000, incomePerCapita: 145000, density: 22000 },
+            { name: "Bapu Nagar", population: 102000, incomePerCapita: 172000, density: 27500 },
+            { name: "Kalwar Road", population: 65000, incomePerCapita: 138000, density: 19000 },
+            { name: "Murlipura", population: 73000, incomePerCapita: 152000, density: 21000 },
+            { name: "Kardhani", population: 84000, incomePerCapita: 148000, density: 23500 },
+            { name: "Kukas", population: 56000, incomePerCapita: 162000, density: 16000 },
+            { name: "Bassi", population: 42000, incomePerCapita: 134000, density: 14000 },
+            { name: "Chomu", population: 68000, incomePerCapita: 142000, density: 18500 },
+            { name: "Shahpura", population: 75000, incomePerCapita: 156000, density: 20500 },
+            { name: "Vidhyadhar Nagar", population: 112000, incomePerCapita: 198000, density: 29000 },
+            { name: "Raja Park", population: 108000, incomePerCapita: 225000, density: 28000 },
+            { name: "Hathroi", population: 89000, incomePerCapita: 168000, density: 24500 }
+        ];
+
+        const svg = document.getElementById('map-svg');
+        const cursorCircle = document.getElementById('cursor-circle');
+        const radiusSlider = document.getElementById('radiusSlider');
+        const radiusDisplay = document.getElementById('radiusDisplay');
+        const tooltip = document.getElementById('tooltip');
+
+        let currentRadius = 60; // SVG units
+        let currentSuburb = null;
+
+        // Convert SVG units to approximate kilometers
+        function svgToKm(svgUnits) {
+            return (svgUnits * 0.033).toFixed(1);
+        }
+
+        // Update radius display
+        function updateRadiusDisplay() {
+            radiusDisplay.textContent = svgToKm(currentRadius) + ' km';
+        }
+
+        // Slider functionality
+        radiusSlider.addEventListener('input', function() {
+            currentRadius = parseInt(this.value);
+            cursorCircle.setAttribute('r', currentRadius);
+            updateRadiusDisplay();
+        });
+
+        // Check if point is inside polygon
+        function pointInPolygon(x, y, polygon) {
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                if (((polygon[i][1] > y) !== (polygon[j][1] > y)) &&
+                    (x < (polygon[j][0] - polygon[i][0]) * (y - polygon[i][1]) / (polygon[j][1] - polygon[i][1]) + polygon[i][0])) {
+                    inside = !inside;
+                }
+            }
+            return inside;
+        }
+
+        // Get polygon points from SVG element
+        function getPolygonPoints(element) {
+            const points = element.getAttribute('points').split(' ');
+            return points.map(point => {
+                const [x, y] = point.split(',');
+                return [parseFloat(x), parseFloat(y)];
+            });
+        }
+
+        // Find which district the cursor is over
+        function findCurrentDistrict(x, y) {
+            const districtElements = document.querySelectorAll('.district-area');
+            for (let i = 0; i < districtElements.length; i++) {
+                const element = districtElements[i];
+                const points = getPolygonPoints(element);
+                if (pointInPolygon(x, y, points)) {
+                    return parseInt(element.getAttribute('data-district'));
+                }
+            }
+            return null;
+        }
+
+        // Calculate distance between two points
+        function getDistance(x1, y1, x2, y2) {
+            return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        }
+
+        // Calculate center of polygon
+        function getPolygonCenter(points) {
+            let x = 0, y = 0;
+            for (let point of points) {
+                x += point[0];
+                y += point[1];
+            }
+            return [x / points.length, y / points.length];
+        }
+
+        // Calculate statistics within radius
+        function calculateStats(centerX, centerY, radius) {
+            let totalPopulation = 0;
+            let totalIncome = 0;
+            let totalWeight = 0;
+            let avgDensity = 0;
+            let districtCount = 0;
+
+            const districtElements = document.querySelectorAll('.district-area');
+            
+            for (let i = 0; i < districtElements.length; i++) {
+                const element = districtElements[i];
+                const points = getPolygonPoints(element);
+                const [districtX, districtY] = getPolygonCenter(points);
+                const distance = getDistance(centerX, centerY, districtX, districtY);
+                
+                if (distance <= radius) {
+                    const overlapFactor = Math.max(0, 1 - (distance / radius));
+                    const district = jaipurDistricts[i];
+                    const effectivePopulation = district.population * overlapFactor;
+                    
+                    totalPopulation += effectivePopulation;
+                    totalIncome += district.incomePerCapita * effectivePopulation;
+                    totalWeight += effectivePopulation;
+                    avgDensity += district.density * overlapFactor;
+                    
+                    if (overlapFactor > 0.1) {
+                        districtCount++;
+                    }
+                }
+            }
+
+            const avgIncome = totalWeight > 0 ? totalIncome / totalWeight : 0;
+            const weightedDensity = districtCount > 0 ? avgDensity / districtCount : 0;
+
+            return {
+                population: Math.round(totalPopulation),
+                avgIncome: Math.round(avgIncome),
+                density: Math.round(weightedDensity)
+            };
+        }
+
+        // Mouse move event
+        svg.addEventListener('mousemove', function(e) {
+            const rect = svg.getBoundingClientRect();
+            const scaleX = 800 / rect.width;
+            const scaleY = 600 / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            // Show and position cursor circle
+            cursorCircle.style.display = 'block';
+            cursorCircle.setAttribute('cx', x);
+            cursorCircle.setAttribute('cy', y);
+
+            // Find current district
+            const districtIndex = findCurrentDistrict(x, y);
+            if (districtIndex !== null && districtIndex !== currentSuburb) {
+                currentSuburb = districtIndex;
+                document.getElementById('suburbDisplay').textContent = jaipurDistricts[districtIndex].name;
+            } else if (districtIndex === null) {
+                document.getElementById('suburbDisplay').textContent = 'Outside mapped area';
+            }
+
+            // Calculate and display statistics
+            const stats = calculateStats(x, y, currentRadius);
+            
+            document.getElementById('populationDisplay').textContent = 
+                stats.population.toLocaleString('en-IN');
+            document.getElementById('incomeDisplay').textContent = 
+                '₹ ' + stats.avgIncome.toLocaleString('en-IN');
+            document.getElementById('densityDisplay').textContent = 
+                stats.density.toLocaleString('en-IN') + ' per km²';
+        });
+
+        // Mouse leave event
+        svg.addEventListener('mouseleave', function() {
+            cursorCircle.style.display = 'none';
+            currentSuburb = null;
+            
+            document.getElementById('suburbDisplay').textContent = 'Move cursor over map';
+            document.getElementById('populationDisplay').textContent = '--';
+            document.getElementById('incomeDisplay').textContent = '₹ --';
+            document.getElementById('densityDisplay').textContent = '-- per km²';
+        });
+
+        // Initialize
+        updateRadiusDisplay();
+    </script>
+</body>
+</html>
