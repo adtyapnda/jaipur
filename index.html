@@ -344,7 +344,7 @@
                 currentSuburb = districtIndex;
                 document.getElementById('suburbDisplay').textContent = jaipurDistricts[districtIndex].name;
             } else if (districtIndex === null) {
-                document.getElementById('suburbDisplay').textContent = 'Outside mapped area';
+                document.getElementById('suburbDisplay').textContent = 'District name NA';
             }
 
             const stats = calculateStats(x, y, currentRadius);
