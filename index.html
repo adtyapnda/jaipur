@@ -367,20 +367,6 @@
             document.getElementById('densityDisplay').textContent = '-- per km²';
         });
 
-        updateRadiusDisplay();
-            const slider = document.getElementById("radiusSlider");
-            const display = document.getElementById("radiusDisplay");
-            const circle = document.getElementById("cursor-circle");
-            const SCALE_FACTOR = 12;
-
-            slider.addEventListener("input", () => {
-            const km = parseFloat(slider.value);
-            const scaledRadius = km * SCALE_FACTOR;
-
-            display.textContent = `${km.toFixed(1)} km`;
-            circle.setAttribute("r", scaledRadius);
-       });
-
     </script>
 </body>
 </html>
