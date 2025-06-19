@@ -9,6 +9,7 @@ body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('https://media.discordapp.net/attachments/1385206938740199556/1385207468161765516/WhatsApp_Image_2025-06-19_at_15.36.40_0acf830c.jpg?ex=68553a7c&is=6853e8fc&hm=172edd3868af17b33efaed485bf9a42d4b35ea2380905346b7092bb443addc53&=&format=webp');
             background-repeat: no-repeat;
+            background-size: cover;
             background-position: center;
             min-height: 100vh;
         }
