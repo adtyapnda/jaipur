@@ -13,46 +13,6 @@ body {
             background-position: center;
             min-height: 100vh;
         }
-       body {
-         font-family: sans-serif;
-         text-align: center;
-         padding: 50px;
-       }
-
-       .circle-container {
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         height: 300px;
-       }
-      
-       .circle {
-         width: calc(20px + 8.3333vw); /* default for 3 km */
-         height: calc(20px + 8.3333vw);
-         background-color: rgba(0, 123, 255, 0.3);
-         border-radius: 50%;
-         transition: all 0.3s ease;
-         margin: 0 auto;
-       }
-
-       input[type="range"] {
-         width: 300px;
-         margin-top: 40px;
-    }
-   
-    /* Size based on slider value using attribute selectors */
-       input[value="2"] ~ .circle-container .circle { width: 40px; height: 40px; }
-       input[value="3"] ~ .circle-container .circle { width: 80px; height: 80px; }
-       input[value="4"] ~ .circle-container .circle { width: 120px; height: 120px; }
-       input[value="5"] ~ .circle-container .circle { width: 160px; height: 160px; }
-       input[value="6"] ~ .circle-container .circle { width: 200px; height: 200px; }
-       input[value="7"] ~ .circle-container .circle { width: 240px; height: 240px; }
-       input[value="8"] ~ .circle-container .circle { width: 280px; height: 280px; }
-       input[value="9"] ~ .circle-container .circle { width: 320px; height: 320px; }
-       input[value="10"] ~ .circle-container .circle { width: 360px; height: 360px; }
-       input[value="11"] ~ .circle-container .circle { width: 400px; height: 400px; }
-       input[value="12"] ~ .circle-container .circle { width: 440px; height: 440px; }
-
        .label {
          margin-top: 20px;
          font-weight: bold;
