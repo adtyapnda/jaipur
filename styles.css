@@ -24,8 +24,8 @@ body {
         }
        .main-logo {
             display: block;
-            margin: 30px auto 20px auto; /* top/bottom spacing, auto-centers */
-            height: 80px; /* smaller height */
+            margin: 50px auto 40px auto; /* top/bottom spacing, auto-centers */
+            height: 100px; /* smaller height */
         }
 
            
