@@ -4,6 +4,292 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interact Jaipur</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #000000, #000000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #000000, #000000);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #000000, #000000);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .map-container {
+            flex: 2;
+            position: relative;
+            height: 600px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            background: #f0f8ff;
+        }
+        
+        #map-svg {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .stats-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            height: fit-content;
+        }
+        
+        .stats-panel h3 {
+            margin: 0 0 25px 0;
+            color: #2c3e50;
+            font-size: 1.5em;
+            text-align: center;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+        }
+        
+        .info-item {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #000000;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+        
+        .current-suburb {
+            background: linear-gradient(45deg, #000000, #000000);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: inline-block;
+        }
+        
+        .radius-value {
+            background: linear-gradient(45deg, #000000, #000000);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .background-map {
+            opacity: 0.3;
+            stroke: #666;
+            stroke-width: 0.5;
+            fill: none;
+        }
+        
+        .district-area {
+            fill: rgba(0,0,0,0.02);
+            stroke: rgba(0,0,0,0.1);
+            stroke-width: 0.5;
+            cursor: crosshair;
+        }
+        
+        .district-area:hover {
+            fill: rgba(52, 152, 219, 0.1);
+            stroke: rgba(52, 152, 219, 0.3);
+            stroke-width: 1;
+        }
+        
+        .cursor-circle {
+            fill: rgba(52, 152, 219, 0.2);
+            stroke: #3498db;
+            stroke-width: 3;
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .description-section {
+            margin: 50px 0;
+            padding: 40px 0;
+            border-top: 2px solid #eee;
+        }
+        
+        .description-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .description-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .description-text {
+            flex: 1;
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        .description-images {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .description-images img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .description-images img:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            background: white;
+            padding: 30px;
+            margin: 40px -30px -30px -30px;
+            border-radius: 0 0 20px 20px;
+            text-align: center;
+            border-top: 2px solid #eee;
+        }
+        
+        .footer p {
+            margin: 0;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        
+        .footer a {
+            text-decoration: none;
+            color: #000000;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .description-content {
+                flex-direction: column;
+            }
+            
+            .description-images {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
