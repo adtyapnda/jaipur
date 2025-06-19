@@ -24,10 +24,10 @@ body {
             background-color: white;
             text-align: center;
         }
-      .container img {
-            display: block;
-            margin: 0 auto 20 px auto;
-            height: 100 px;
+      .main-logo {
+           display: block;
+           height: 120px;
+           margin: 40px auto 20px auto; 
         }
            
         h1 {
