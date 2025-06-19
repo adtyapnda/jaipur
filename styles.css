@@ -28,29 +28,6 @@ body {
             margin: 50px auto 40px auto; /* top/bottom spacing, auto-centers */
             height: 100px; /* smaller height */
         }
-       .map-container {
-           position: relative;
-           width: 100%;
-           height: auto;
-           border-radius: 20px;
-           overflow: hidden;
-        }
-
-       .map-container img.map-background-img {
-           position: absolute;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           object-fit: contain; /* or cover */
-           z-index: 0;
-           opacity: 0.3; /* adjust visibility */
-       }
-
-         #map-svg {
-           position: relative;
-           z-index: 1;
-       }
            
         h1 {
             text-align: center;
