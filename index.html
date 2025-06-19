@@ -368,9 +368,16 @@
         });
         const slider = document.getElementById("radiusSlider");
         const display = document.getElementById("radiusDisplay");
+        const circle = document.getElementById("circle");
+
         slider.addEventListener("input", function () {
-        display.textContent = slider.value + " km";
-        });
+        const km = parseFloat(slider.value);
+        const scaleFactor = 20;
+        const diameter = km * scaleFactor * 2;
+        circle.style.width = diameter + "px";
+        circle.style.height = diameter + "px";
+        display.textContent = km + " km";
+});
     </script>
 </body>
 </html>
