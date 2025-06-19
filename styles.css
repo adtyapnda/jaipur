@@ -103,6 +103,11 @@ body {
             height: 100%;
             cursor: crosshair;
         }
+
+         .district-area {
+            opacity: 0;
+        }
+
         
         .stats-panel {
             flex: 1;
