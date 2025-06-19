@@ -22,6 +22,12 @@ body {
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
+       .main-logo {
+            display: block;
+            margin: 30px auto 20px auto; /* top/bottom spacing, auto-centers */
+            height: 80px; /* smaller height */
+        }
+
            
         h1 {
             text-align: center;
