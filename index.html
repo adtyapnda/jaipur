@@ -4,200 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interact Jaipur</title>
-    <link rel="stylesheet" href="style.css" />
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000000 0%, #000000 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            background: linear-gradient(45deg, #000000, #000000);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-            border-radius: 15px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .control-group label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .slider {
-            width: 200px;
-            height: 6px;
-            border-radius: 3px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #000000, #000000);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #000000, #000000);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        
-        .map-container {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-            background: #f0f8ff;
-        }
-        
-        #map-svg {
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-        }
-        
-        .info-panel {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            min-width: 280px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .info-panel h3 {
-            margin: 0 0 15px 0;
-            color: #2c3e50;
-            font-size: 1.3em;
-        }
-        
-        .info-item {
-            margin: 12px 0;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        
-        .info-value {
-            font-size: 1.2em;
-            color: #2c3e50;
-            font-weight: 700;
-        }
-        
-        .current-suburb {
-            background: linear-gradient(45deg, #000000, #000000);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-        
-        .radius-value {
-            background: linear-gradient(45deg, #000000, #000000);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        
-        .background-map {
-            opacity: 0.3;
-            stroke: #666;
-            stroke-width: 0.5;
-            fill: none;
-        }
-        
-        .district-area {
-            fill: rgba(0,0,0,0.02);
-            stroke: rgba(0,0,0,0.1);
-            stroke-width: 0.5;
-            cursor: crosshair;
-        }
-        
-        .district-area:hover {
-            fill: rgba(52, 152, 219, 0.1);
-            stroke: rgba(52, 152, 219, 0.3);
-            stroke-width: 1;
-        }
-        
-        .cursor-circle {
-            fill: rgba(52, 152, 219, 0.2);
-            stroke: #3498db;
-            stroke-width: 3;
-            pointer-events: none;
-        }
-
-        .tooltip {
-            position: absolute;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 1000;
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+   
 </head>
 <body>
     <div class="container">
@@ -221,6 +29,7 @@
         </div>
         
         <div class="map-container">
+            <img src="assets/jaipur map.png" alt="Jaipur Map" class="map-bg">
             <svg id="map-svg" viewBox="0 0 800 600">
                 
                 <g class="background-boundaries">
@@ -339,11 +148,12 @@
                 
                 <circle id="cursor-circle" cx="400" cy="300" r="60" class="cursor-circle" style="display: none;"/>
             </svg>
-            
-            <div class="info-panel">
-                <h3>Statistics Required:</h3>
-                <div class="info-item">
-                    <div class="info-label">Current Suburb</div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>Statistics Required:</h3>
+            <div class="info-item">
+                <div class="info-label">Current Suburb</div>
                     <div class="info-value current-suburb" id="suburbDisplay">Move cursor over map</div>
                 </div>
                 <div class="info-item">
@@ -357,12 +167,12 @@
                 <div class="info-item">
                     <div class="info-label">Population Density</div>
                     <div class="info-value" id="densityDisplay">-- per km²</div>
-                </div>
             </div>
         </div>
         
         <div class="tooltip" id="tooltip"></div>
     </div>
+    </body>
 
     <script>
         const jaipurDistricts = [
