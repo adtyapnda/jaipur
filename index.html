@@ -368,16 +368,19 @@
         });
 
         updateRadiusDisplay();
-        const slider = document.getElementById("radiusSlider");
-        const display = document.getElementById("radiusDisplay");
+            const slider = document.getElementById("radiusSlider");
+            const display = document.getElementById("radiusDisplay");
+            const circle = document.getElementById("cursor-circle");
+            const SCALE_FACTOR = 12;
 
-        function updateDisplay() {
-            display.textContent = `${parseFloat(slider.value).toFixed(1)} km`;
-        }
+            slider.addEventListener("input", () => {
+            const km = parseFloat(slider.value);
+            const scaledRadius = km * SCALE_FACTOR;
 
-        slider.addEventListener("input", updateDisplay);
+            display.textContent = `${km.toFixed(1)} km`;
+            circle.setAttribute("r", scaledRadius);
+       });
 
-       updateDisplay();
     </script>
 </body>
 </html>
