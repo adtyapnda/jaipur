@@ -39,7 +39,7 @@ Built by Aditya Panda, Iha Singh, and Sagar Singh.
 
 ---
 
-## Getting Started
+## To make contributions, configure and send it to me
 
 Clone the repository and open `index.html` in your browser:
 
