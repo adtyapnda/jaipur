@@ -117,10 +117,10 @@ body {
 
         .map-bg {
             position: absolute;
-            top: 10px; /* moved down slightly */
+            top: 0px; /* moved down slightly */
             left: 50%;
             transform: translateX(-50%);
-            width: 90%; /* slightly larger */
+            width: 70%; /* slightly larger */
             height: auto;
             z-index: 0;
             opacity: 0.4;
